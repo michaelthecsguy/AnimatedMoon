@@ -17,6 +17,7 @@
           <td>Name</td>
           <td>Email</td>
           <td>Created Date</td>
+          <td>Last Updated Date</td>
           <td>Action</td>
         </tr>
       </thead>
@@ -28,8 +29,9 @@
           <td><%=e.getProperty("name") %></td>
           <td><%=e.getProperty("email") %></td>
           <td><%=e.getProperty("date") %></td>
+          <td><%=e.getProperty("lastUpdatedDate") == null? e.getProperty("date") : e.getProperty("lastUpdatedDate") %></td>
           <td><a href="update/<%=e.getProperty("name")%>">Update</a>
-                               | <a href="delete/<%=e.getProperty("name")%>">Delete</a></td>
+            | <a href="delete/<%=e.getProperty("name")%>">Delete</a></td>
         </tr>
       <%
         }

@@ -54,6 +54,7 @@ public class CustomerController
     customer.setProperty("name", name);
     customer.setProperty("email", email);
     customer.setProperty("date", date);
+    customer.setProperty("lastUpdatedDate", date);
 
     /*
      * Replace the following line with Spring Bean changes
@@ -88,7 +89,6 @@ public class CustomerController
   @RequestMapping(value="/update", method = RequestMethod.POST)
   public ModelAndView update(HttpServletRequest request, ModelMap model)
   {
-
     String name = request.getParameter("name");
     String email = request.getParameter("email");
     String originalName =  request.getParameter("originalName");
@@ -101,7 +101,8 @@ public class CustomerController
 
     customer.setProperty("name", name);
     customer.setProperty("email", email);
-    customer.setProperty("date", new Date());
+
+    customer.setProperty("lastUpdatedDate", new Date());
 
     googleDatastoreService.put(customer);
 
