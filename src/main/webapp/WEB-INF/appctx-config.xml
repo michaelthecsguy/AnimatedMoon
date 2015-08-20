@@ -3,13 +3,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-  <bean id="DatastoreService" class="com.animatedmoon.service.DatastoreServiceImpl">
-    <constructor-arg ref="dataSource"/>
+  <bean id="DatastoreService" class="com.animatedmoon.service.GoogleDatastoreServiceImpl">
+    <property name="dataSource" ref="datastoreService" />
   </bean>
 
-  <bean id="dataSource" class="com.google.appengine.api.datastore.DatastoreService">
-
-
-  </bean>
+  <bean id="datastoreService" class="com.google.appengine.api.datastore.DatastoreServiceFactory" factory-method="getDatastoreService"/>
 
 </beans>
