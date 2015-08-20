@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.animatedmoon.service.GoogleDatastoreService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +29,10 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 
 @Controller
 @RequestMapping("/customer")
-public class CustomerController {
+public class CustomerController
+{
+  @Autowired
+  private GoogleDatastoreService googleDatastoreService;
 
   @RequestMapping(value="/addCustomerPage", method = RequestMethod.GET)
   public String getAddCustomerPage(ModelMap model) {
@@ -50,26 +55,28 @@ public class CustomerController {
     customer.setProperty("email", email);
     customer.setProperty("date", date);
 
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(customer);
+    /*
+     * Replace the following line with Spring Bean changes
+     * DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+     * datastore.put(customer);
+     */
+    googleDatastoreService.put(customer);
 
     return new ModelAndView("redirect:list");
 
   }
 
   @RequestMapping(value="/update/{name}", method = RequestMethod.GET)
-  public String getUpdateCustomerPage(@PathVariable String name,
-                                      HttpServletRequest request, ModelMap model) {
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  public String getUpdateCustomerPage(@PathVariable String name, HttpServletRequest request, ModelMap model)
+  {
     Query query = new Query("Customer");
     /*
      * //since addFilter() is gonna be deprecated//
      * //Reference: http://stackoverflow.com/questions/15942840/add-filter-query-in-google-app-engine
      * query.addFilter("name", FilterOperator.EQUAL, name);
-    */
+     */
     query.setFilter(FilterOperator.EQUAL.of("name", name));
-    PreparedQuery pq = datastore.prepare(query);
+    PreparedQuery pq = googleDatastoreService.prepare(query);
 
     Entity e = pq.asSingleEntity();
     model.addAttribute("customer",  e);
@@ -79,41 +86,38 @@ public class CustomerController {
   }
 
   @RequestMapping(value="/update", method = RequestMethod.POST)
-  public ModelAndView update(HttpServletRequest request, ModelMap model) {
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  public ModelAndView update(HttpServletRequest request, ModelMap model)
+  {
 
     String name = request.getParameter("name");
     String email = request.getParameter("email");
     String originalName =  request.getParameter("originalName");
 
     Query query = new Query("Customer");
-    query.addFilter("name", FilterOperator.EQUAL, originalName);
-    PreparedQuery pq = datastore.prepare(query);
+    query.setFilter(FilterOperator.EQUAL.of("name", originalName));
+
+    PreparedQuery pq = googleDatastoreService.prepare(query);
     Entity customer = pq.asSingleEntity();
 
     customer.setProperty("name", name);
     customer.setProperty("email", email);
     customer.setProperty("date", new Date());
 
-    datastore.put(customer);
+    googleDatastoreService.put(customer);
 
     //return to list
     return new ModelAndView("redirect:list");
   }
 
   @RequestMapping(value="/delete/{name}", method = RequestMethod.GET)
-  public ModelAndView delete(@PathVariable String name,
-                             HttpServletRequest request, ModelMap model) {
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
+  public ModelAndView delete(@PathVariable String name, HttpServletRequest request, ModelMap model)
+  {
     Query query = new Query("Customer");
-    query.addFilter("name", FilterOperator.EQUAL, name);
-    PreparedQuery pq = datastore.prepare(query);
+    query.setFilter(FilterOperator.EQUAL.of("name", name));
+    PreparedQuery pq = googleDatastoreService.prepare(query);
     Entity customer = pq.asSingleEntity();
 
-    datastore.delete(customer.getKey());
+    googleDatastoreService.delete(customer.getKey());
 
     //return to list
     return new ModelAndView("redirect:../list");
@@ -123,10 +127,13 @@ public class CustomerController {
   //get all customers
   @RequestMapping(value="/list", method = RequestMethod.GET)
   public String listCustomer(ModelMap model) {
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    /*
+     * Replace the following line with Spring Bean changes
+     * DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+     * datastore.prepare(query);
+     */
     Query query = new Query("Customer").addSort("date", Query.SortDirection.DESCENDING);
-    List<Entity> customers = datastore.prepare(query).asList(FetchOptions.Builder.withLimit(10));
+    List<Entity> customers = googleDatastoreService.prepare(query).asList(FetchOptions.Builder.withLimit(10));
 
     model.addAttribute("customerList",  customers);
     return "list";
