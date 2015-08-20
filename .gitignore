@@ -1,0 +1,15 @@
+.metadata/*
+.recommenders/*
+.idea/*
+.settings/*
+bin/*
+test-output/*
+.classpath
+.project
+target/*
+dm-*.jar
+velocity.log
+*.class
+*.iml
+*.ipr
+*.iws
